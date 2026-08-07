@@ -1,0 +1,78 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
+import { Area } from '../../areas/entities/area.entity';
+import { Rol } from '../../roles/entities/rol.entity';
+import { Equipo } from '../../equipos/entities/equipo.entity';
+import { Ticket } from '../../tickets/entities/ticket.entity';
+
+@Entity('usuarios')
+export class Usuario {
+  @PrimaryGeneratedColumn({ name: 'id_usuario' })
+  id_usuario: number;
+
+  @ManyToOne(() => Area, { nullable: false, onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'id_area' })
+  area: Area;
+
+  @Column({ name: 'id_area', type: 'int' })
+  id_area: number;
+
+  @ManyToOne(() => Rol, { nullable: false, onDelete: 'RESTRICT' })
+  @JoinColumn({ name: 'id_rol' })
+  rol: Rol;
+
+  @Column({ name: 'id_rol', type: 'int' })
+  id_rol: number;
+
+  @Column({ length: 100 })
+  nombres: string;
+
+  @Column({ length: 100 })
+  apellidos: string;
+
+  @Column({ length: 20, unique: true, nullable: true })
+  documento: string;
+
+  @Column({ length: 150, unique: true })
+  correo: string;
+
+  @Column({ length: 255, select: false })
+  password: string;
+
+  @Column({ length: 20, nullable: true })
+  celular: string;
+
+  @Column({ length: 100, nullable: true })
+  cargo: string;
+
+  @Column({ length: 255, nullable: true })
+  foto: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  ultimo_login: Date;
+
+  @Column({ type: 'boolean', default: true })
+  activo: boolean;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  fecha_creacion: Date;
+
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  fecha_actualizacion: Date;
+
+  @OneToMany(() => Equipo, (equipo) => equipo.usuario)
+  equipos: Equipo[];
+
+  @OneToMany(() => Ticket, (ticket) => ticket.usuario)
+  tickets: Ticket[];
+}
