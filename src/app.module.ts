@@ -19,6 +19,7 @@ import { AdjuntosModule } from './adjuntos/adjuntos.module';
 import { HistorialModule } from './historial/historial.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     AdjuntosModule,
     HistorialModule,
     AuthModule,
+    SocketModule,
   ],
   controllers: [AppController],
   providers: [

@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Equipo } from './entities/equipo.entity';
 import { CreateEquipoDto, UpdateEquipoDto } from './dto/equipo.dto';
+import {
+  obtenerParametrosPaginacion,
+  paginacionMeta,
+} from '../common/paginacion.util';
 
 @Injectable()
 export class EquiposService {
@@ -11,10 +15,23 @@ export class EquiposService {
     private readonly repo: Repository<Equipo>,
   ) {}
 
-  findAll() {
-    return this.repo.find({
+  async findAll(filtros: Record<string, string> = {}) {
+    const { pagina, pageSize, offset } = obtenerParametrosPaginacion(
+      filtros,
+      10,
+    );
+
+    const [items, total] = await this.repo.findAndCount({
       relations: { usuario: true, tickets: true },
+      order: { id_equipo: 'DESC' },
+      take: pageSize,
+      skip: offset,
     });
+
+    return {
+      items,
+      ...paginacionMeta(pagina, pageSize, total),
+    };
   }
 
   async findOne(id: number) {

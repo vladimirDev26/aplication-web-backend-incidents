@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { HistorialService } from './historial.service';
 import { CreateHistorialDto } from './dto/historial.dto';
 
@@ -7,13 +7,16 @@ export class HistorialController {
   constructor(private readonly service: HistorialService) {}
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query() filtros: Record<string, string>) {
+    return this.service.findAll(filtros);
   }
 
   @Get('ticket/:idTicket')
-  findByTicket(@Param('idTicket') idTicket: string) {
-    return this.service.findByTicket(+idTicket);
+  findByTicket(
+    @Param('idTicket') idTicket: string,
+    @Query() filtros: Record<string, string>,
+  ) {
+    return this.service.findByTicket(+idTicket, filtros);
   }
 
   @Get(':id')

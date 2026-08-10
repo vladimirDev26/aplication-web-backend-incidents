@@ -1,36 +1,44 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsString, IsOptional, IsInt } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsString, IsOptional, IsInt, IsIn } from 'class-validator';
+
+const vacioAUndefined = ({ value }: { value: unknown }) =>
+  value === '' ? undefined : value;
 
 export class CreateTicketDto {
   @IsInt()
-  id_usuario: number;
+  id_usuario!: number;
 
   @IsOptional()
   @IsInt()
+  @Transform(vacioAUndefined)
   id_responsable?: number;
 
   @IsOptional()
   @IsInt()
+  @Transform(vacioAUndefined)
   id_equipo?: number;
 
   @IsInt()
-  id_categoria: number;
+  id_categoria!: number;
 
   @IsInt()
-  id_prioridad: number;
+  id_prioridad!: number;
 
   @IsOptional()
   @IsInt()
+  @Transform(vacioAUndefined)
   id_estado?: number;
 
   @IsString()
-  asunto: string;
+  asunto!: string;
 
   @IsString()
-  descripcion: string;
+  descripcion!: string;
 
   @IsOptional()
   @IsString()
+  @Transform(vacioAUndefined)
   solucion?: string;
 }
 
@@ -38,10 +46,22 @@ export class UpdateTicketDto extends PartialType(CreateTicketDto) {}
 
 export class AsignarTicketDto {
   @IsInt()
-  id_responsable: number;
+  id_responsable!: number;
 }
 
 export class ResolverTicketDto {
   @IsString()
-  solucion: string;
+  solucion!: string;
+}
+
+export class ConformidadTicketDto {
+  @IsIn(['conforme', 'no_conforme'], {
+    message: 'conformidad debe ser conforme o no_conforme',
+  })
+  conformidad!: string;
+
+  @IsOptional()
+  @IsString()
+  @Transform(vacioAUndefined)
+  comentario_conformidad?: string;
 }

@@ -1,0 +1,740 @@
+{
+  "info": {
+    "_postman_id": "9f7c2b1e-45a3-4c8d-9e65-8f3a0b2c6d4e",
+    "name": "Sistema de Incidencias API",
+    "description": "Colección para probar el backend NestJS del sistema de incidencias. Después de Login, el token se guarda automáticamente en la variable {{token}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login (obtener token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access_token) {",
+                  "  pm.collectionVariables.set('token', json.access_token);",
+                  "  console.log('Token guardado correctamente');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"correo\": \"admin@ejemplo.com\",\n    \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalogos",
+      "item": [
+        {
+          "name": "Roles",
+          "item": [
+            {
+              "name": "Listar roles",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/roles",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["roles"]
+                }
+              }
+            },
+            {
+              "name": "Crear rol",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"nombre\": \"Soporte\",\n    \"descripcion\": \"Técnicos de mesa de ayuda\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/roles",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["roles"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Areas",
+          "item": [
+            {
+              "name": "Listar areas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/areas",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["areas"]
+                }
+              }
+            },
+            {
+              "name": "Crear area",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"nombre\": \"TI\",\n    \"descripcion\": \"Tecnología de la información\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/areas",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["areas"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Categorias",
+          "item": [
+            {
+              "name": "Listar categorias",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/categorias",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["categorias"]
+                }
+              }
+            },
+            {
+              "name": "Crear categoria",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"nombre\": \"Hardware\",\n    \"descripcion\": \"Fallas de equipo físico\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/categorias",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["categorias"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Prioridades",
+          "item": [
+            {
+              "name": "Listar prioridades",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/prioridades",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["prioridades"]
+                }
+              }
+            },
+            {
+              "name": "Crear prioridad",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"nombre\": \"Alta\",\n    \"tiempo_respuesta\": 4,\n    \"color\": \"#dc2626\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/prioridades",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["prioridades"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estados",
+          "item": [
+            {
+              "name": "Listar estados",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/estados",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estados"]
+                }
+              }
+            },
+            {
+              "name": "Crear estado Nuevo",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"nombre\": \"Nuevo\",\n    \"color\": \"#3b82f6\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/estados",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estados"]
+                }
+              }
+            },
+            {
+              "name": "Crear estado Asignado",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"nombre\": \"Asignado\",\n    \"color\": \"#f59e0b\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/estados",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estados"]
+                }
+              }
+            },
+            {
+              "name": "Crear estado En proceso",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"nombre\": \"En proceso\",\n    \"color\": \"#eab308\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/estados",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estados"]
+                }
+              }
+            },
+            {
+              "name": "Crear estado Resuelto",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"nombre\": \"Resuelto\",\n    \"color\": \"#10b981\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/estados",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estados"]
+                }
+              }
+            },
+            {
+              "name": "Crear estado Cerrado",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"nombre\": \"Cerrado\",\n    \"color\": \"#6b7280\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/estados",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estados"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios?activos=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios"],
+              "query": [
+                {
+                  "key": "activos",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id_area\": 1,\n    \"id_rol\": 1,\n    \"nombres\": \"Juan\",\n    \"apellidos\": \"Pérez\",\n    \"documento\": \"12345678\",\n    \"correo\": \"admin@ejemplo.com\",\n    \"password\": \"123456\",\n    \"celular\": \"999888777\",\n    \"cargo\": \"Soporte TI\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"celular\": \"999888000\",\n    \"cargo\": \"Soporte Sr.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "1"]
+            }
+          }
+        },
+        {
+          "name": "Desactivar usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Equipos",
+      "item": [
+        {
+          "name": "Listar equipos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/equipos",
+              "host": ["{{baseUrl}}"],
+              "path": ["equipos"]
+            }
+          }
+        },
+        {
+          "name": "Crear equipo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id_usuario\": 1,\n    \"codigo_patrimonial\": \"EQ-001\",\n    \"nombre_equipo\": \"PC Oficina\",\n    \"tipo\": \"Desktop\",\n    \"marca\": \"Dell\",\n    \"modelo\": \"OptiPlex\",\n    \"serie\": \"XYZ123\",\n    \"procesador\": \"Intel i5\",\n    \"ram\": \"16GB\",\n    \"disco\": \"SSD 512GB\",\n    \"sistema_operativo\": \"Windows 11\",\n    \"direccion_ip\": \"192.168.1.10\",\n    \"mac\": \"AA:BB:CC:DD:EE:FF\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/equipos",
+              "host": ["{{baseUrl}}"],
+              "path": ["equipos"]
+            }
+          }
+        },
+        {
+          "name": "Detalle equipo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/equipos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["equipos", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Crear ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id_usuario\": 1,\n    \"id_equipo\": 1,\n    \"id_categoria\": 1,\n    \"id_prioridad\": 2,\n    \"asunto\": \"PC no enciende\",\n    \"descripcion\": \"La computadora no da video al encenderla\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            }
+          }
+        },
+        {
+          "name": "Listar tickets (con filtros)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets?id_responsable=1&asunto=PC",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"],
+              "query": [
+                {
+                  "key": "id_responsable",
+                  "value": "1"
+                },
+                {
+                  "key": "asunto",
+                  "value": "PC"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Tablero por estados (board)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/por-estado",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "por-estado"]
+            }
+          }
+        },
+        {
+          "name": "Tickets de un estado (limit/offset/filtros)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/estado/en proceso?limit=5&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "estado", "en proceso"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Detalle completode un ticket",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/1/detalle",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "1", "detalle"]
+            }
+          }
+        },
+        {
+          "name": "Asignar ticket",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id_responsable\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/1/asignar",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "1", "asignar"]
+            }
+          }
+        },
+        {
+          "name": "Iniciar ticket (En proceso)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/1/iniciar",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "1", "iniciar"]
+            }
+          }
+        },
+        {
+          "name": "Resolver ticket",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"solucion\": \"Se cambió la fuente de poder\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/1/resolver",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "1", "resolver"]
+            }
+          }
+        },
+        {
+          "name": "Cerrar ticket",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/1/cerrar",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "1", "cerrar"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comentarios",
+      "item": [
+        {
+          "name": "Crear comentario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id_ticket\": 1,\n    \"id_usuario\": 1,\n    \"comentario\": \"Ya lo estoy revisando\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comentarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["comentarios"]
+            }
+          }
+        },
+        {
+          "name": "Comentarios de un ticket",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comentarios/ticket/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["comentarios", "ticket", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Adjuntos",
+      "item": [
+        {
+          "name": "Subir adjunto (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "id_ticket",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/adjuntos",
+              "host": ["{{baseUrl}}"],
+              "path": ["adjuntos"]
+            }
+          }
+        },
+        {
+          "name": "Adjuntos de un ticket",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adjuntos/ticket/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["adjuntos", "ticket", "1"]
+            }
+          }
+        },
+        {
+          "name": "Descargar adjunto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/adjuntos/archivo/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["adjuntos", "archivo", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Historial",
+      "item": [
+        {
+          "name": "Historial de un ticket",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/historial/ticket/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["historial", "ticket", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

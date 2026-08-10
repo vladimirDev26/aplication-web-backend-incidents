@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AreasService } from './areas.service';
 import { CreateAreaDto, UpdateAreaDto } from './dto/area.dto';
@@ -15,8 +16,8 @@ export class AreasController {
   constructor(private readonly service: AreasService) {}
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query() filtros: Record<string, string>) {
+    return this.service.findAll(filtros);
   }
 
   @Get(':id')

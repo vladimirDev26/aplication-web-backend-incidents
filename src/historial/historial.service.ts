@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Historial } from './entities/historial.entity';
 import { CreateHistorialDto } from './dto/historial.dto';
+import {
+  obtenerParametrosPaginacion,
+  paginacionMeta,
+} from '../common/paginacion.util';
 
 @Injectable()
 export class HistorialService {
@@ -11,16 +15,36 @@ export class HistorialService {
     private readonly repo: Repository<Historial>,
   ) {}
 
-  findAll() {
-    return this.repo.find({ relations: { usuario: true, ticket: true } });
+  async findAll(filtros: Record<string, string> = {}) {
+    const { pagina, pageSize, offset } = obtenerParametrosPaginacion(
+      filtros,
+      10,
+    );
+
+    const qb = this.repo
+      .createQueryBuilder('h')
+      .leftJoinAndSelect('h.usuario', 'usuario')
+      .leftJoinAndSelect('h.ticket', 'ticket')
+      .orderBy('h.fecha', 'DESC');
+
+    if (filtros.id_ticket)
+      qb.andWhere('h.id_ticket = :idTicket', {
+        idTicket: filtros.id_ticket,
+      });
+
+    const [items, total] = await qb
+      .take(pageSize)
+      .skip(offset)
+      .getManyAndCount();
+
+    return {
+      items,
+      ...paginacionMeta(pagina, pageSize, total),
+    };
   }
 
-  findByTicket(idTicket: number) {
-    return this.repo.find({
-      where: { id_ticket: idTicket },
-      relations: { usuario: true },
-      order: { fecha: 'ASC' },
-    });
+  findByTicket(idTicket: number, filtros: Record<string, string> = {}) {
+    return this.findAll({ ...filtros, id_ticket: String(idTicket) });
   }
 
   async create(dto: CreateHistorialDto) {

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { EquiposService } from './equipos.service';
 import { CreateEquipoDto, UpdateEquipoDto } from './dto/equipo.dto';
@@ -15,8 +16,8 @@ export class EquiposController {
   constructor(private readonly service: EquiposService) {}
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query() filtros: Record<string, string>) {
+    return this.service.findAll(filtros);
   }
 
   @Get(':id')

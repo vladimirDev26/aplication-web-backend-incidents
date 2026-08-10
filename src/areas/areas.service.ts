@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Area } from './entities/area.entity';
 import { CreateAreaDto, UpdateAreaDto } from './dto/area.dto';
+import {
+  obtenerParametrosPaginacion,
+  paginacionMeta,
+} from '../common/paginacion.util';
 
 @Injectable()
 export class AreasService {
@@ -11,8 +15,22 @@ export class AreasService {
     private readonly repo: Repository<Area>,
   ) {}
 
-  findAll() {
-    return this.repo.find();
+  async findAll(filtros: Record<string, string> = {}) {
+    const { pagina, pageSize, offset } = obtenerParametrosPaginacion(
+      filtros,
+      10,
+    );
+
+    const [items, total] = await this.repo.findAndCount({
+      order: { id_area: 'ASC' },
+      take: pageSize,
+      skip: offset,
+    });
+
+    return {
+      items,
+      ...paginacionMeta(pagina, pageSize, total),
+    };
   }
 
   async findOne(id: number) {

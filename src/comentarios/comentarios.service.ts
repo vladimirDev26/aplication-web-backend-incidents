@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comentario } from './entities/comentario.entity';
 import { CreateComentarioDto, UpdateComentarioDto } from './dto/comentario.dto';
+import { TicketsGateway } from '../socket/tickets.gateway';
 
 @Injectable()
 export class ComentariosService {
   constructor(
     @InjectRepository(Comentario)
     private readonly repo: Repository<Comentario>,
+    private readonly socketGateway: TicketsGateway,
   ) {}
 
   findAll() {
@@ -34,7 +36,10 @@ export class ComentariosService {
   }
 
   create(dto: CreateComentarioDto) {
-    return this.repo.save(this.repo.create(dto));
+    return this.repo.save(this.repo.create(dto)).then((guardado) => {
+      this.socketGateway.emitirComentario(guardado.id_ticket);
+      return guardado;
+    });
   }
 
   async update(id: number, dto: UpdateComentarioDto) {
