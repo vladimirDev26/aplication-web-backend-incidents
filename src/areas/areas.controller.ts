@@ -7,17 +7,22 @@ import {
   Param,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { AreasService } from './areas.service';
+import { soloActivosPara } from '../common/auth.util';
 import { CreateAreaDto, UpdateAreaDto } from './dto/area.dto';
+import { Public } from '../auth/public.decorator';
 
 @Controller('areas')
 export class AreasController {
   constructor(private readonly service: AreasService) {}
 
+  @Public()
   @Get()
-  findAll(@Query() filtros: Record<string, string>) {
-    return this.service.findAll(filtros);
+  findAll(@Query() filtros: Record<string, string>, @Req() req: Request) {
+    return this.service.findAll(filtros, soloActivosPara(req));
   }
 
   @Get(':id')

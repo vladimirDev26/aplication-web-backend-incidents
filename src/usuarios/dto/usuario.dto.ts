@@ -4,31 +4,31 @@ import {
   IsOptional,
   IsInt,
   IsEmail,
-  IsBoolean,
+  IsNumber,
 } from 'class-validator';
 
 export class CreateUsuarioDto {
   @IsInt()
-  id_area: number;
+  id_area!: number;
 
   @IsInt()
-  id_rol: number;
+  id_rol!: number;
 
   @IsString()
-  nombres: string;
+  nombres!: string;
 
   @IsString()
-  apellidos: string;
+  apellidos!: string;
 
   @IsOptional()
   @IsString()
   documento?: string;
 
   @IsEmail()
-  correo: string;
+  correo!: string;
 
   @IsString()
-  password: string;
+  password!: string;
 
   @IsOptional()
   @IsString()
@@ -43,16 +43,31 @@ export class CreateUsuarioDto {
   foto?: string;
 
   @IsOptional()
-  @IsBoolean()
-  activo?: boolean;
+  @IsNumber()
+  estado_registro?: number;
 }
 
 export class UpdateUsuarioDto extends PartialType(CreateUsuarioDto) {}
 
 export class LoginDto {
   @IsEmail()
-  correo: string;
+  correo!: string;
 
   @IsString()
-  password: string;
+  password!: string;
+}
+
+export class LoginDniDto {
+  @IsString()
+  documento!: string;
+}
+
+export class LoginCelularDto {
+  @IsString()
+  celular!: string;
+}
+
+export class AsignarEspecialidadesDto {
+  @IsNumber({}, { each: true })
+  especialidades!: number[];
 }

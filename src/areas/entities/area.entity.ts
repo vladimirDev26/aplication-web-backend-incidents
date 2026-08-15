@@ -4,20 +4,20 @@ import { Usuario } from '../../usuarios/entities/usuario.entity';
 @Entity('areas')
 export class Area {
   @PrimaryGeneratedColumn({ name: 'id_area' })
-  id_area: number;
+  id_area!: number;
 
   @Column({ length: 100 })
-  nombre: string;
+  nombre!: string;
 
   @Column({ type: 'text', nullable: true })
-  descripcion: string;
+  descripcion!: string;
 
-  @Column({ type: 'boolean', default: true })
-  activo: boolean;
+  @Column({ name: 'estado_registro', type: 'int', default: 1 })
+  estado_registro!: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  fecha_creacion: Date;
+  fecha_creacion!: Date;
 
   @OneToMany(() => Usuario, (usuario) => usuario.area)
-  usuarios: Usuario[];
+  usuarios!: Usuario[];
 }

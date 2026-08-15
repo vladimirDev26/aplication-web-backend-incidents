@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Prioridad } from './entities/prioridad.entity';
 import { CreatePrioridadDto, UpdatePrioridadDto } from './dto/prioridad.dto';
 
@@ -11,8 +11,10 @@ export class PrioridadesService {
     private readonly repo: Repository<Prioridad>,
   ) {}
 
-  findAll() {
-    return this.repo.find();
+  findAll(soloActivos: boolean = true) {
+    return this.repo.find({
+      where: { estado_registro: soloActivos ? 1 : Not(0) },
+    });
   }
 
   async findOne(id: number) {
@@ -33,8 +35,7 @@ export class PrioridadesService {
   }
 
   async remove(id: number) {
-    await this.findOne(id);
-    await this.repo.delete(id);
+    await this.repo.update(id, { estado_registro: 0 });
     return { message: 'Prioridad eliminada' };
   }
 }

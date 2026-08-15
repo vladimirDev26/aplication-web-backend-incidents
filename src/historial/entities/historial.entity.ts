@@ -35,4 +35,7 @@ export class Historial {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   fecha: Date;
+
+  @Column({ name: 'estado_registro', type: 'int', default: 1 })
+  estado_registro!: number;
 }

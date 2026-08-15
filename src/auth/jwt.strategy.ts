@@ -17,14 +17,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: { sub: number; correo: string }) {
-    const usuario = await this.usuariosService.findOne(payload.sub);
-    if (!usuario) return null;
+  // Este método inyecta el objeto retornado directamente en req.user de forma automática
+  async validate(payload: { sub: number; correo: string; id_rol: number; rol_nombre: string }) {
+    // Retornamos los datos directamente desde el payload del JWT sin consultar la Base de Datos
     return {
-      id_usuario: usuario.id_usuario,
-      correo: usuario.correo,
-      id_rol: usuario.id_rol,
-      rol_nombre: usuario.rol?.nombre,
+      id_usuario: payload.sub,
+      correo: payload.correo,
+      id_rol: payload.id_rol,
+      rol_nombre: payload.rol_nombre,
     };
   }
 }

@@ -6,17 +6,22 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { EstadosService } from './estados.service';
 import { CreateEstadoDto, UpdateEstadoDto } from './dto/estado.dto';
+import { soloActivosPara } from '../common/auth.util';
+import { Public } from '../auth/public.decorator';
 
 @Controller('estados')
 export class EstadosController {
   constructor(private readonly service: EstadosService) {}
 
+  @Public()
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Req() req: Request) {
+    return this.service.findAll(soloActivosPara(req));
   }
 
   @Get(':id')

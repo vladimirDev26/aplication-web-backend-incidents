@@ -1,14 +1,16 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, Query, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { HistorialService } from './historial.service';
 import { CreateHistorialDto } from './dto/historial.dto';
+import { soloActivosPara } from '../common/auth.util';
 
 @Controller('historial')
 export class HistorialController {
   constructor(private readonly service: HistorialService) {}
 
   @Get()
-  findAll(@Query() filtros: Record<string, string>) {
-    return this.service.findAll(filtros);
+  findAll(@Query() filtros: Record<string, string>, @Req() req: Request) {
+    return this.service.findAll(filtros, soloActivosPara(req));
   }
 
   @Get('ticket/:idTicket')
@@ -27,5 +29,10 @@ export class HistorialController {
   @Post()
   create(@Body() dto: CreateHistorialDto) {
     return this.service.create(dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.service.remove(+id);
   }
 }

@@ -1,5 +1,5 @@
+import { Entity, ManyToMany, JoinTable } from 'typeorm';
 import {
-  Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
@@ -10,69 +10,81 @@ import { Area } from '../../areas/entities/area.entity';
 import { Rol } from '../../roles/entities/rol.entity';
 import { Equipo } from '../../equipos/entities/equipo.entity';
 import { Ticket } from '../../tickets/entities/ticket.entity';
+import { Especialidad } from '../../especialidades/entities/especialidad.entity';
 
 @Entity('usuarios')
 export class Usuario {
   @PrimaryGeneratedColumn({ name: 'id_usuario' })
-  id_usuario: number;
+  id_usuario!: number;
 
   @ManyToOne(() => Area, { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'id_area' })
-  area: Area;
+  area!: Area;
 
   @Column({ name: 'id_area', type: 'int' })
-  id_area: number;
+  id_area!: number;
 
   @ManyToOne(() => Rol, { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'id_rol' })
-  rol: Rol;
+  rol!: Rol;
 
   @Column({ name: 'id_rol', type: 'int' })
-  id_rol: number;
+  id_rol!: number;
 
   @Column({ length: 100 })
-  nombres: string;
+  nombres!: string;
 
   @Column({ length: 100 })
-  apellidos: string;
+  apellidos!: string;
 
   @Column({ length: 20, unique: true, nullable: true })
-  documento: string;
+  documento!: string;
 
   @Column({ length: 150, unique: true })
-  correo: string;
+  correo!: string;
 
   @Column({ length: 255, select: false })
-  password: string;
+  password!: string;
 
   @Column({ length: 20, nullable: true })
-  celular: string;
+  celular!: string;
 
   @Column({ length: 100, nullable: true })
-  cargo: string;
+  cargo!: string;
 
   @Column({ length: 255, nullable: true })
-  foto: string;
+  foto!: string;
 
   @Column({ type: 'timestamp', nullable: true })
-  ultimo_login: Date;
+  ultimo_login!: Date;
 
-  @Column({ type: 'boolean', default: true })
-  activo: boolean;
+  @Column({ name: 'estado_registro', type: 'int', default: 1 })
+  estado_registro!: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  fecha_creacion: Date;
+  fecha_creacion!: Date;
 
   @Column({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
   })
-  fecha_actualizacion: Date;
+  fecha_actualizacion!: Date;
 
   @OneToMany(() => Equipo, (equipo) => equipo.usuario)
-  equipos: Equipo[];
+  equipos!: Equipo[];
 
   @OneToMany(() => Ticket, (ticket) => ticket.usuario)
-  tickets: Ticket[];
+  tickets!: Ticket[];
+
+  @ManyToMany(() => Especialidad, (especialidad) => especialidad.usuarios)
+  @JoinTable({
+    name: 'usuarios_especialidades',
+    joinColumn: { name: 'id_usuario', referencedColumnName: 'id_usuario' },
+    inverseJoinColumn: {
+      name: 'id_especialidad',
+      referencedColumnName: 'id_especialidad',
+    },
+  })
+  especialidades!: Especialidad[];
 }

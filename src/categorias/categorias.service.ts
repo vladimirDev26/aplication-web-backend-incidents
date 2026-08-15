@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Categoria } from './entities/categoria.entity';
 import { CreateCategoriaDto, UpdateCategoriaDto } from './dto/categoria.dto';
 import {
@@ -15,13 +15,17 @@ export class CategoriasService {
     private readonly repo: Repository<Categoria>,
   ) {}
 
-  async findAll(filtros: Record<string, string> = {}) {
+  async findAll(
+    filtros: Record<string, string> = {},
+    soloActivos: boolean = true,
+  ) {
     const { pagina, pageSize, offset } = obtenerParametrosPaginacion(
       filtros,
       10,
     );
 
     const [items, total] = await this.repo.findAndCount({
+      where: { estado_registro: soloActivos ? 1 : Not(0) },
       order: { id_categoria: 'ASC' },
       take: pageSize,
       skip: offset,
@@ -51,8 +55,7 @@ export class CategoriasService {
   }
 
   async remove(id: number) {
-    await this.findOne(id);
-    await this.repo.delete(id);
+    await this.repo.update(id, { estado_registro: 0 });
     return { message: 'Categoría eliminada' };
   }
 }

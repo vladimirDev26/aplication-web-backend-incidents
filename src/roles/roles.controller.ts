@@ -6,17 +6,22 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { RolesService } from './roles.service';
 import { CreateRolDto, UpdateRolDto } from './dto/rol.dto';
+import { soloActivosPara } from '../common/auth.util';
+import { Public } from '../auth/public.decorator';
 
 @Controller('roles')
 export class RolesController {
   constructor(private readonly service: RolesService) {}
 
+  @Public()
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Req() req: Request) {
+    return this.service.findAll(soloActivosPara(req));
   }
 
   @Get(':id')

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Equipo } from './entities/equipo.entity';
 import { CreateEquipoDto, UpdateEquipoDto } from './dto/equipo.dto';
 import {
@@ -15,18 +15,50 @@ export class EquiposService {
     private readonly repo: Repository<Equipo>,
   ) {}
 
-  async findAll(filtros: Record<string, string> = {}) {
+  async findAll(
+    filtros: Record<string, string> = {},
+    soloActivos: boolean = true,
+  ) {
     const { pagina, pageSize, offset } = obtenerParametrosPaginacion(
       filtros,
       10,
     );
 
-    const [items, total] = await this.repo.findAndCount({
-      relations: { usuario: true, tickets: true },
-      order: { id_equipo: 'DESC' },
-      take: pageSize,
-      skip: offset,
-    });
+    const q = (filtros.q ?? '').trim();
+    const id_usuario = filtros.id_usuario ? Number(filtros.id_usuario) : undefined;
+
+    const estadoFiltro = soloActivos
+      ? 'equipo.estado_registro = 1'
+      : 'equipo.estado_registro != 0';
+
+    const qb = this.repo
+      .createQueryBuilder('equipo')
+      .leftJoinAndSelect('equipo.usuario', 'usuario')
+      .leftJoinAndSelect('equipo.tickets', 'tickets')
+      .andWhere(estadoFiltro)
+      .orderBy('equipo.id_equipo', 'DESC')
+      .take(pageSize)
+      .skip(offset);
+
+    if (id_usuario) {
+      qb.andWhere('equipo.id_usuario = :id_usuario', { id_usuario });
+    }
+
+    if (q) {
+      qb.andWhere(
+        `(equipo.codigo_patrimonial ILIKE :q
+          OR equipo.nombre_equipo ILIKE :q
+          OR equipo.marca ILIKE :q
+          OR equipo.modelo ILIKE :q
+          OR equipo.serie ILIKE :q
+          OR equipo.imei ILIKE :q
+          OR equipo.numero_telefonico ILIKE :q
+          OR CONCAT(usuario.nombres, ' ', usuario.apellidos) ILIKE :q)`,
+        { q: `%${q}%` },
+      );
+    }
+
+    const [items, total] = await qb.getManyAndCount();
 
     return {
       items,
@@ -54,8 +86,7 @@ export class EquiposService {
   }
 
   async remove(id: number) {
-    await this.findOne(id);
-    await this.repo.delete(id);
+    await this.repo.update(id, { estado_registro: 0 });
     return { message: 'Equipo eliminado' };
   }
 }

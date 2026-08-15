@@ -3,14 +3,14 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity('categorias')
 export class Categoria {
   @PrimaryGeneratedColumn({ name: 'id_categoria' })
-  id_categoria: number;
+  id_categoria!: number;
 
   @Column({ length: 100, nullable: true })
-  nombre: string;
+  nombre!: string;
 
   @Column({ type: 'text', nullable: true })
-  descripcion: string;
+  descripcion!: string;
 
-  @Column({ type: 'boolean', default: true })
-  activo: boolean;
+  @Column({ name: 'estado_registro', type: 'int', default: 1 })
+  estado_registro!: number;
 }

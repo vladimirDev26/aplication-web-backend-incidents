@@ -105,6 +105,9 @@ export class Ticket {
   @Column({ type: 'text', nullable: true })
   comentario_conformidad!: string;
 
+  @Column({ name: 'estado_registro', type: 'int', default: 1 })
+  estado_registro!: number;
+
   @OneToMany(() => Comentario, (comentario) => comentario.ticket)
   comentarios!: Comentario[];
 
@@ -113,4 +116,8 @@ export class Ticket {
 
   @OneToMany(() => Historial, (historial) => historial.ticket)
   historial!: Historial[];
+
+  adjuntosCount?: number;
+  primerAdjuntoUrl?: string | null;
+  primerAdjuntoExt?: string | null;
 }

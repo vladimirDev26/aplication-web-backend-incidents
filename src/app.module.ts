@@ -12,11 +12,13 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { PrioridadesModule } from './prioridades/prioridades.module';
 import { EstadosModule } from './estados/estados.module';
+import { EspecialidadesModule } from './especialidades/especialidades.module';
 import { EquiposModule } from './equipos/equipos.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { ComentariosModule } from './comentarios/comentarios.module';
 import { AdjuntosModule } from './adjuntos/adjuntos.module';
 import { HistorialModule } from './historial/historial.module';
+import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { SocketModule } from './socket/socket.module';
@@ -47,11 +49,13 @@ import { SocketModule } from './socket/socket.module';
     CategoriasModule,
     PrioridadesModule,
     EstadosModule,
+    EspecialidadesModule,
     EquiposModule,
     TicketsModule,
     ComentariosModule,
     AdjuntosModule,
     HistorialModule,
+    NotificacionesModule,
     AuthModule,
     SocketModule,
   ],

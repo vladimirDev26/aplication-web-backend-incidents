@@ -4,20 +4,20 @@ import { Usuario } from '../../usuarios/entities/usuario.entity';
 @Entity('roles')
 export class Rol {
   @PrimaryGeneratedColumn({ name: 'id_rol' })
-  id_rol: number;
+  id_rol!: number;
 
   @Column({ length: 50, unique: true })
-  nombre: string;
+  nombre!: string;
 
   @Column({ type: 'text', nullable: true })
-  descripcion: string;
+  descripcion!: string;
 
-  @Column({ type: 'boolean', default: true })
-  activo: boolean;
+  @Column({ name: 'estado_registro', type: 'int', default: 1 })
+  estado_registro!: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  fecha_creacion: Date;
+  fecha_creacion!: Date;
 
   @OneToMany(() => Usuario, (usuario) => usuario.rol)
-  usuarios: Usuario[];
+  usuarios!: Usuario[];
 }

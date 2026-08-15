@@ -1,3 +1,4 @@
+import type { Request } from 'express';
 import {
   Controller,
   Get,
@@ -7,17 +8,23 @@ import {
   Param,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service';
-import { CreateUsuarioDto, UpdateUsuarioDto } from './dto/usuario.dto';
+import {
+  CreateUsuarioDto,
+  UpdateUsuarioDto,
+  AsignarEspecialidadesDto,
+} from './dto/usuario.dto';
+import { soloActivosPara } from '../common/auth.util';
 
 @Controller('usuarios')
 export class UsuariosController {
   constructor(private readonly service: UsuariosService) {}
 
   @Get()
-  findAll(@Query('activos') activos?: string) {
-    return this.service.findAll(activos);
+  findAll(@Query() query: Record<string, string>, @Req() req: Request) {
+    return this.service.findAll(query.activos, soloActivosPara(req));
   }
 
   @Get(':id')
@@ -33,6 +40,14 @@ export class UsuariosController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateUsuarioDto) {
     return this.service.update(+id, dto);
+  }
+
+  @Patch(':id/especialidades')
+  asignarEspecialidades(
+    @Param('id') id: string,
+    @Body() dto: AsignarEspecialidadesDto,
+  ) {
+    return this.service.asignarEspecialidades(+id, dto.especialidades);
   }
 
   @Delete(':id')

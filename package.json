@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Vladimir Sanchez Astoray",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -36,6 +36,7 @@
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "cloudinary": "^2.10.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.22.0",

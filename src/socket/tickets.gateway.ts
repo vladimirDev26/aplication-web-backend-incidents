@@ -8,6 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Ticket } from '../tickets/entities/ticket.entity';
+import { Notificacion } from '../notificaciones/entities/notificacion.entity';
 
 type Accion = 'created' | 'updated';
 
@@ -48,6 +49,21 @@ export class TicketsGateway
 
   emitirComentario(idTicket: number) {
     this.server?.emit('ticket.comentario', { id_ticket: idTicket });
+  }
+
+  emitirNotificacion(notificacion: Notificacion) {
+    this.server?.emit('notificacion.nueva', {
+      id_usuario: notificacion.id_usuario,
+      notificacion: {
+        id_notificacion: notificacion.id_notificacion,
+        id_ticket: notificacion.id_ticket,
+        tipo: notificacion.tipo,
+        titulo: notificacion.titulo,
+        mensaje: notificacion.mensaje,
+        leida: notificacion.leida,
+        fecha_creacion: notificacion.fecha_creacion,
+      },
+    });
   }
 
   private resumen(t: Ticket) {

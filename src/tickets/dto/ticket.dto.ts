@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Transform } from 'class-transformer';
-import { IsString, IsOptional, IsInt, IsIn } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsIn, IsNumber } from 'class-validator';
 
 const vacioAUndefined = ({ value }: { value: unknown }) =>
   value === '' ? undefined : value;
@@ -40,6 +40,10 @@ export class CreateTicketDto {
   @IsString()
   @Transform(vacioAUndefined)
   solucion?: string;
+
+  @IsOptional()
+  @IsNumber()
+  estado_registro?: number;
 }
 
 export class UpdateTicketDto extends PartialType(CreateTicketDto) {}

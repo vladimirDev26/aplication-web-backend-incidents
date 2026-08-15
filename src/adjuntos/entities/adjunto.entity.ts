@@ -10,30 +10,36 @@ import { Ticket } from '../../tickets/entities/ticket.entity';
 @Entity('adjuntos')
 export class Adjunto {
   @PrimaryGeneratedColumn({ name: 'id_adjunto' })
-  id_adjunto: number;
+  id_adjunto!: number;
 
   @ManyToOne(() => Ticket, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'id_ticket' })
-  ticket: Ticket;
+  ticket!: Ticket;
 
   @Column({ name: 'id_ticket', type: 'int', nullable: true })
-  id_ticket: number;
+  id_ticket!: number;
 
   @Column({ name: 'nombre_original', length: 255, nullable: true })
-  nombre_original: string;
+  nombre_original!: string;
 
   @Column({ name: 'nombre_archivo', length: 255, nullable: true })
-  nombre_archivo: string;
+  nombre_archivo!: string;
 
   @Column({ type: 'varchar', length: 500, nullable: true })
-  ruta: string;
+  ruta!: string;
+
+  @Column({ type: 'text', nullable: true })
+  url!: string;
+
+  @Column({ name: 'public_id', length: 255, nullable: true })
+  public_id!: string;
 
   @Column({ type: 'varchar', length: 20, nullable: true })
-  extension: string;
+  extension!: string;
 
   @Column({ type: 'bigint', nullable: true })
-  tamano: string;
+  tamano!: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  fecha: Date;
+  fecha!: Date;
 }

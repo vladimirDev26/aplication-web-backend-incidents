@@ -3,7 +3,7 @@ import { Transform } from 'class-transformer';
 import {
   IsString,
   IsOptional,
-  IsBoolean,
+  IsNumber,
   IsInt,
   IsDateString,
 } from 'class-validator';
@@ -70,12 +70,32 @@ export class CreateEquipoDto {
   @IsOptional()
   @IsString()
   @Transform(vacioAUndefined)
-  direccion_ip?: string;
+  tipo_impresora?: string;
 
   @IsOptional()
   @IsString()
   @Transform(vacioAUndefined)
-  mac?: string;
+  imei?: string;
+
+  @IsOptional()
+  @IsString()
+  @Transform(vacioAUndefined)
+  numero_telefonico?: string;
+
+  @IsOptional()
+  @IsString()
+  @Transform(vacioAUndefined)
+  version_so?: string;
+
+  @IsOptional()
+  @IsString()
+  @Transform(vacioAUndefined)
+  almacenamiento?: string;
+
+  @IsOptional()
+  @IsString()
+  @Transform(vacioAUndefined)
+  operador?: string;
 
   @IsOptional()
   @IsDateString()
@@ -93,9 +113,9 @@ export class CreateEquipoDto {
   observaciones?: string;
 
   @IsOptional()
-  @IsBoolean()
+  @IsNumber()
   @Transform(vacioAUndefined)
-  activo?: boolean;
+  estado_registro?: number;
 }
 
 export class UpdateEquipoDto extends PartialType(CreateEquipoDto) {}

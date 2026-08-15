@@ -7,17 +7,20 @@ import {
   Param,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { EquiposService } from './equipos.service';
 import { CreateEquipoDto, UpdateEquipoDto } from './dto/equipo.dto';
+import { soloActivosPara } from '../common/auth.util';
 
 @Controller('equipos')
 export class EquiposController {
   constructor(private readonly service: EquiposService) {}
 
   @Get()
-  findAll(@Query() filtros: Record<string, string>) {
-    return this.service.findAll(filtros);
+  findAll(@Query() filtros: Record<string, string>, @Req() req: Request) {
+    return this.service.findAll(filtros, soloActivosPara(req));
   }
 
   @Get(':id')

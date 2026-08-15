@@ -15,14 +15,22 @@ export class HistorialService {
     private readonly repo: Repository<Historial>,
   ) {}
 
-  async findAll(filtros: Record<string, string> = {}) {
+  async findAll(
+    filtros: Record<string, string> = {},
+    soloActivos: boolean = true,
+  ) {
     const { pagina, pageSize, offset } = obtenerParametrosPaginacion(
       filtros,
       10,
     );
 
+    const estadoFiltro = soloActivos
+      ? 'h.estado_registro = 1'
+      : 'h.estado_registro != 0';
+
     const qb = this.repo
       .createQueryBuilder('h')
+      .andWhere(estadoFiltro)
       .leftJoinAndSelect('h.usuario', 'usuario')
       .leftJoinAndSelect('h.ticket', 'ticket')
       .orderBy('h.fecha', 'DESC');
@@ -63,5 +71,10 @@ export class HistorialService {
     if (!historial)
       throw new NotFoundException(`Historial ${id} no encontrado`);
     return historial;
+  }
+
+  async remove(id: number) {
+    await this.repo.update(id, { estado_registro: 0 });
+    return { message: 'Historial ocultado' };
   }
 }

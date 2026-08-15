@@ -6,17 +6,22 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { PrioridadesService } from './prioridades.service';
 import { CreatePrioridadDto, UpdatePrioridadDto } from './dto/prioridad.dto';
+import { soloActivosPara } from '../common/auth.util';
+import { Public } from '../auth/public.decorator';
 
 @Controller('prioridades')
 export class PrioridadesController {
   constructor(private readonly service: PrioridadesService) {}
 
+  @Public()
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Req() req: Request) {
+    return this.service.findAll(soloActivosPara(req));
   }
 
   @Get(':id')

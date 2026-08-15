@@ -10,4 +10,7 @@ export class Estado {
 
   @Column({ length: 20, nullable: true })
   color: string;
+
+  @Column({ name: 'estado_registro', type: 'int', default: 1 })
+  estado_registro: number;
 }

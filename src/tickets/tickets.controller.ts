@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { TicketsService } from './tickets.service';
+import { soloActivosPara } from '../common/auth.util';
 import {
   CreateTicketDto,
   UpdateTicketDto,
@@ -24,8 +25,9 @@ export class TicketsController {
   constructor(private readonly service: TicketsService) {}
 
   @Get()
-  findAll(@Query() filtros: Record<string, string>) {
-    return this.service.findAll(filtros);
+  findAll(@Query() filtros: Record<string, string>, @Req() req: Request) {
+    const u = this.usuario(req);
+    return this.service.findAll(filtros, soloActivosPara(req), u.id_usuario, u.rol_nombre);
   }
 
   @Get('por-estado')
@@ -33,16 +35,36 @@ export class TicketsController {
     @Query('pagina') pagina: string,
     @Query('pageSize') pageSize: string,
     @Query('estados') estados: string,
+    @Req() req: Request,
   ) {
-    return this.service.obtenerPorEstado({ pagina, pageSize, estados });
+    const u = this.usuario(req);
+    return this.service.obtenerPorEstado(
+      { pagina, pageSize, estados },
+      soloActivosPara(req),
+      u.id_usuario,
+      u.rol_nombre,
+    );
   }
 
   @Get('estado/:idEstado')
   porEstadoIndividual(
     @Param('idEstado') idEstado: string,
     @Query() filtros: Record<string, string>,
+    @Req() req: Request,
   ) {
-    return this.service.porEstado(idEstado, filtros);
+    const u = this.usuario(req);
+    return this.service.porEstado(idEstado, filtros, soloActivosPara(req), u.id_usuario, u.rol_nombre);
+  }
+
+  @Get('estadisticas')
+  estadisticas(@Query() filtros: Record<string, string>, @Req() req: Request) {
+    const u = this.usuario(req);
+    return this.service.estadisticas(
+      filtros,
+      soloActivosPara(req),
+      u.id_usuario,
+      u.rol_nombre,
+    );
   }
 
   @Get(':id/detalle')
@@ -99,5 +121,14 @@ export class TicketsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.service.remove(+id);
+  }
+
+  private usuario(req: Request) {
+    const user = (req as { user?: { id_usuario?: number; rol_nombre?: string } })
+      .user;
+    return {
+      id_usuario: user?.id_usuario,
+      rol_nombre: user?.rol_nombre,
+    };
   }
 }
