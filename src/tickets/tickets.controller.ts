@@ -16,6 +16,7 @@ import {
   CreateTicketDto,
   UpdateTicketDto,
   AsignarTicketDto,
+  DerivarTicketDto,
   ResolverTicketDto,
   ConformidadTicketDto,
 } from './dto/ticket.dto';
@@ -67,6 +68,11 @@ export class TicketsController {
     );
   }
 
+  @Get('carga-tecnicos')
+  cargaTecnicos() {
+    return this.service.cargaTecnicos();
+  }
+
   @Get(':id/detalle')
   detalle(@Param('id') id: string) {
     return this.service.detalle(+id);
@@ -90,6 +96,17 @@ export class TicketsController {
   @Patch(':id/asignar')
   asignar(@Param('id') id: string, @Body() dto: AsignarTicketDto) {
     return this.service.asignar(+id, dto);
+  }
+
+  @Patch(':id/derivar')
+  derivar(
+    @Param('id') id: string,
+    @Body() dto: DerivarTicketDto,
+    @Req() req: Request,
+  ) {
+    const idUsuarioAccion = (req as { user?: { id_usuario?: number } }).user
+      ?.id_usuario;
+    return this.service.derivar(+id, dto, idUsuarioAccion);
   }
 
   @Patch(':id/iniciar')

@@ -11,6 +11,10 @@ export class CreateUsuarioDto {
   @IsInt()
   id_area!: number;
 
+  @IsOptional()
+  @IsInt()
+  id_sede?: number;
+
   @IsInt()
   id_rol!: number;
 

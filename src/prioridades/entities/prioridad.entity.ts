@@ -11,6 +11,12 @@ export class Prioridad {
   @Column({ type: 'int', nullable: true })
   tiempo_respuesta!: number;
 
+  @Column({ name: 'sla_respuesta_min', type: 'int', nullable: true })
+  sla_respuesta_min!: number;
+
+  @Column({ name: 'sla_resolucion_min', type: 'int', nullable: true })
+  sla_resolucion_min!: number;
+
   @Column({ length: 20, nullable: true })
   color!: string;
 

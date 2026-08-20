@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Area } from '../../areas/entities/area.entity';
+import { Sede } from '../../sedes/entities/sede.entity';
 import { Rol } from '../../roles/entities/rol.entity';
 import { Equipo } from '../../equipos/entities/equipo.entity';
 import { Ticket } from '../../tickets/entities/ticket.entity';
@@ -23,6 +24,13 @@ export class Usuario {
 
   @Column({ name: 'id_area', type: 'int' })
   id_area!: number;
+
+  @ManyToOne(() => Sede, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'id_sede' })
+  sede!: Sede;
+
+  @Column({ name: 'id_sede', type: 'int', nullable: true })
+  id_sede!: number;
 
   @ManyToOne(() => Rol, { nullable: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'id_rol' })

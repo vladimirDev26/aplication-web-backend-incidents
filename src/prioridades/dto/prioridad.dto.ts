@@ -11,6 +11,14 @@ export class CreatePrioridadDto {
   tiempo_respuesta?: number;
 
   @IsOptional()
+  @IsInt()
+  sla_respuesta_min?: number;
+
+  @IsOptional()
+  @IsInt()
+  sla_resolucion_min?: number;
+
+  @IsOptional()
   @IsString()
   color?: string;
 }

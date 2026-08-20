@@ -53,6 +53,16 @@ export class AsignarTicketDto {
   id_responsable!: number;
 }
 
+export class DerivarTicketDto {
+  @IsInt()
+  id_responsable!: number;
+
+  @IsOptional()
+  @IsString()
+  @Transform(vacioAUndefined)
+  motivo?: string;
+}
+
 export class ResolverTicketDto {
   @IsString()
   solucion!: string;

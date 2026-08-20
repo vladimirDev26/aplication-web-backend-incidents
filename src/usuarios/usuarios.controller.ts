@@ -24,7 +24,7 @@ export class UsuariosController {
 
   @Get()
   findAll(@Query() query: Record<string, string>, @Req() req: Request) {
-    return this.service.findAll(query.activos, soloActivosPara(req));
+    return this.service.findAll(query, query.activos, soloActivosPara(req));
   }
 
   @Get(':id')

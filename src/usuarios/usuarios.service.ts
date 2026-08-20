@@ -10,6 +10,10 @@ import { Usuario } from './entities/usuario.entity';
 import { Especialidad } from '../especialidades/entities/especialidad.entity';
 import { CreateUsuarioDto, UpdateUsuarioDto } from './dto/usuario.dto';
 import { TicketsService } from '../tickets/tickets.service';
+import {
+  obtenerParametrosPaginacion,
+  paginacionMeta,
+} from '../common/paginacion.util';
 
 @Injectable()
 export class UsuariosService {
@@ -19,7 +23,11 @@ export class UsuariosService {
     private readonly ticketsService: TicketsService,
   ) {}
 
-  findAll(activos?: string, soloActivos = true) {
+  async findAll(
+    filtros: Record<string, string> = {},
+    activos?: string,
+    soloActivos = true,
+  ) {
     const where: any = {};
     if (soloActivos) {
       where.estado_registro = 1;
@@ -28,17 +36,36 @@ export class UsuariosService {
       if (activos === 'true') where.estado_registro = 1;
       if (activos === 'false') where.estado_registro = 2;
     }
-    return this.repo.find({
+
+    const { pagina, pageSize, offset } = obtenerParametrosPaginacion(
+      filtros,
+      10,
+    );
+
+    const [items, total] = await this.repo.findAndCount({
       where,
-      relations: { area: true, rol: true, especialidades: true },
+      relations: { area: true, sede: true, rol: true, especialidades: true },
       order: { nombres: 'ASC' },
+      take: pageSize,
+      skip: offset,
     });
+
+    return {
+      items,
+      ...paginacionMeta(pagina, pageSize, total),
+    };
   }
 
   async findOne(id: number) {
     const usuario = await this.repo.findOne({
       where: { id_usuario: id },
-      relations: { area: true, rol: true, equipos: true, especialidades: true },
+      relations: {
+        area: true,
+        sede: true,
+        rol: true,
+        equipos: true,
+        especialidades: true,
+      },
     });
     if (!usuario) throw new NotFoundException(`Usuario ${id} no encontrado`);
     return usuario;
@@ -47,7 +74,7 @@ export class UsuariosService {
   findByCorreo(correo: string) {
     return this.repo.findOne({
       where: { correo },
-      relations: { area: true, rol: true },
+      relations: { area: true, sede: true, rol: true },
     });
   }
 
@@ -57,6 +84,7 @@ export class UsuariosService {
       .addSelect('u.password')
       .leftJoinAndSelect('u.rol', 'rol')
       .leftJoinAndSelect('u.area', 'area')
+      .leftJoinAndSelect('u.sede', 'sede')
       .where('LOWER(u.documento) = LOWER(:documento)', { documento })
       .getOne();
     return usuario;
@@ -72,6 +100,7 @@ export class UsuariosService {
       .addSelect('u.password')
       .leftJoinAndSelect('u.rol', 'rol')
       .leftJoinAndSelect('u.area', 'area')
+      .leftJoinAndSelect('u.sede', 'sede')
       .where('u.celular IS NOT NULL AND TRIM(u.celular) <> :vacio', {
         vacio: '',
       })
@@ -90,6 +119,7 @@ export class UsuariosService {
       .addSelect('u.password')
       .leftJoinAndSelect('u.rol', 'rol')
       .leftJoinAndSelect('u.area', 'area')
+      .leftJoinAndSelect('u.sede', 'sede')
       .where('LOWER(u.correo) = LOWER(:correo)', { correo })
       .getOne();
     return usuario;

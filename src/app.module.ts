@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RolesModule } from './roles/roles.module';
 import { AreasModule } from './areas/areas.module';
+import { SedesModule } from './sedes/sedes.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { PrioridadesModule } from './prioridades/prioridades.module';
@@ -15,6 +16,7 @@ import { EstadosModule } from './estados/estados.module';
 import { EspecialidadesModule } from './especialidades/especialidades.module';
 import { EquiposModule } from './equipos/equipos.module';
 import { TicketsModule } from './tickets/tickets.module';
+import { ReportesModule } from './reportes/reportes.module';
 import { ComentariosModule } from './comentarios/comentarios.module';
 import { AdjuntosModule } from './adjuntos/adjuntos.module';
 import { HistorialModule } from './historial/historial.module';
@@ -45,6 +47,7 @@ import { SocketModule } from './socket/socket.module';
     }),
     RolesModule,
     AreasModule,
+    SedesModule,
     UsuariosModule,
     CategoriasModule,
     PrioridadesModule,
@@ -52,6 +55,7 @@ import { SocketModule } from './socket/socket.module';
     EspecialidadesModule,
     EquiposModule,
     TicketsModule,
+    ReportesModule,
     ComentariosModule,
     AdjuntosModule,
     HistorialModule,

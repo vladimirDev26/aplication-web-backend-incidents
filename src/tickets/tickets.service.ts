@@ -17,6 +17,7 @@ import {
   CreateTicketDto,
   UpdateTicketDto,
   AsignarTicketDto,
+  DerivarTicketDto,
   ResolverTicketDto,
   ConformidadTicketDto,
 } from './dto/ticket.dto';
@@ -386,6 +387,64 @@ export class TicketsService {
     return actualizado;
   }
 
+  async derivar(
+    id: number,
+    dto: DerivarTicketDto,
+    idUsuarioAccion?: number,
+  ) {
+    const ticket = await this.findOne(id);
+
+    if (ticket.id_responsable === dto.id_responsable) {
+      throw new BadRequestException(
+        'El ticket ya está asignado al responsable seleccionado',
+      );
+    }
+
+    const tecnico = await this.dataSource.manager.findOne(Usuario, {
+      where: { id_usuario: dto.id_responsable },
+      relations: { rol: true },
+    });
+    if (!tecnico || tecnico.estado_registro !== 1) {
+      throw new BadRequestException('El responsable seleccionado no está activo');
+    }
+    const rolTecnico = (tecnico.rol?.nombre ?? '').toLowerCase();
+    if (rolTecnico !== 'tecnico' && rolTecnico !== 'soporte') {
+      throw new BadRequestException(
+        'El ticket solo puede derivarse a un técnico o soporte',
+      );
+    }
+
+    const anterior = ticket.responsable;
+    const anteriorNombre = anterior
+      ? `${anterior.nombres} ${anterior.apellidos}`
+      : 'Sin asignar';
+    const nuevoNombre = `${tecnico.nombres} ${tecnico.apellidos}`;
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.update(Ticket, id, {
+        id_responsable: dto.id_responsable,
+      });
+      await manager.save(
+        this.historialService.nuevaEntidad({
+          id_ticket: id,
+          id_usuario: idUsuarioAccion,
+          accion: 'Derivación',
+          detalle: dto.motivo
+            ? `Ticket derivado de ${anteriorNombre} a ${nuevoNombre} — ${dto.motivo}`
+            : `Ticket derivado de ${anteriorNombre} a ${nuevoNombre}`,
+        }),
+      );
+    });
+
+    const actualizado = await this.findOne(id);
+    this.socketGateway.emitirTicket('updated', actualizado);
+    await this.notificar('derivado', actualizado, {
+      anteriorId: anterior?.id_usuario,
+      anteriorNombre,
+    });
+    return actualizado;
+  }
+
   async iniciar(id: number, idUsuarioAccion?: number) {
     await this.findOne(id);
     await this.dataSource.transaction(async (manager) => {
@@ -521,12 +580,14 @@ export class TicketsService {
     accion:
       | 'nuevo'
       | 'asignado'
+      | 'derivado'
       | 'en_proceso'
       | 'resuelto'
       | 'cerrado'
       | 'conformidad'
       | 'no_conforme',
     t: Ticket,
+    extra?: { anteriorId?: number; anteriorNombre?: string },
   ) {
     const solicitante = t.usuario;
     const responsable = t.responsable
@@ -562,6 +623,17 @@ export class TicketsService {
       tipoDefault = 'ticket.asignado';
       tituloDefault = 'Incidencia asignada';
       mensajeDefault = '';
+    } else if (accion === 'derivado') {
+      if (solicitanteId) idsDestino.add(solicitanteId);
+      if (responsableId) idsDestino.add(responsableId);
+      if (extra?.anteriorId) idsDestino.add(extra.anteriorId);
+      const grupo = await this.notificacionesService.usuariosPorRoles(
+        ROLES_GRUPO,
+      );
+      for (const u of grupo) idsDestino.add(u.id_usuario);
+      tipoDefault = 'ticket.derivado';
+      tituloDefault = 'Cambio de técnico';
+      mensajeDefault = `El ticket N° ${codigo} fue derivado a ${responsable}.`;
     } else if (accion === 'en_proceso' || accion === 'resuelto') {
       if (solicitanteId) idsDestino.add(solicitanteId);
       const grupo = await this.notificacionesService.usuariosPorRoles(
@@ -612,6 +684,21 @@ export class TicketsService {
         } else {
           titulo = 'Técnico asignado';
           mensaje = `${responsable} ha sido asignado a tu incidencia ${codigo}`;
+        }
+      }
+
+      if (accion === 'derivado') {
+        if (idUsuario === solicitanteId) {
+          titulo = 'Cambio de técnico';
+          mensaje = `Ahora ${responsable} está a cargo de tu ticket N° ${codigo}.`;
+        } else if (idUsuario === responsableId) {
+          titulo = 'Ticket derivado a tu cargo';
+          mensaje = `Se te ha derivado el ticket N° ${codigo}. Solicitante: ${nombreSolicitante} · Área: ${area} · Prioridad: ${prioridad}`;
+        } else if (extra?.anteriorId === idUsuario) {
+          titulo = 'Ticket reasignado';
+          mensaje = `El ticket N° ${codigo} fue derivado a ${responsable}. Tú ya no eres el responsable.`;
+        } else {
+          mensaje = `El ticket N° ${codigo} fue derivado de ${extra?.anteriorNombre ?? '—'} a ${responsable}.`;
         }
       }
 
@@ -849,6 +936,37 @@ export class TicketsService {
       porCategoria: formatear(porCategoriaRaw),
       porArea: formatear(porAreaRaw),
     };
+  }
+
+  async cargaTecnicos() {
+    const filas = await this.query<Array<{
+      id_usuario: number;
+      nombres: string;
+      apellidos: string;
+      cantidad: string;
+    }>>(
+      this.dataSource.manager,
+      `SELECT u.id_usuario, u.nombres, u.apellidos,
+              (SELECT COUNT(*)
+                 FROM tickets t
+                 JOIN estados e ON e.id_estado = t.id_estado
+                WHERE t.id_responsable = u.id_usuario
+                  AND t.estado_registro = 1
+                  AND LOWER(e.nombre) NOT IN ('resuelto', 'cerrado')) AS cantidad
+         FROM usuarios u
+         JOIN roles r ON r.id_rol = u.id_rol
+        WHERE u.estado_registro = 1
+          AND LOWER(r.nombre) IN ('tecnico', 'soporte')
+        ORDER BY u.nombres ASC`,
+      [],
+    );
+
+    return filas.map((f) => ({
+      id_usuario: Number(f.id_usuario),
+      nombres: f.nombres,
+      apellidos: f.apellidos,
+      cantidad: Number(f.cantidad ?? 0),
+    }));
   }
 
   private async generarCodigo(manager: EntityManager): Promise<string> {
