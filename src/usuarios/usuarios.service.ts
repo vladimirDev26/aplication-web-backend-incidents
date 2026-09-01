@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
@@ -141,7 +142,11 @@ export class UsuariosService {
 
     const { password, ...resto } = dto;
     const hash = await bcrypt.hash(password, 10);
-    const usuario = this.repo.create({ ...resto, password: hash });
+    const usuario = this.repo.create({
+      ...resto,
+      password: hash,
+      password_visible: password,
+    });
     await this.repo.save(usuario);
     return this.findOne(usuario.id_usuario);
   }
@@ -149,14 +154,40 @@ export class UsuariosService {
   async update(id: number, dto: UpdateUsuarioDto) {
     await this.findOne(id);
 
-    if (dto.password) {
-      dto.password = await bcrypt.hash(dto.password, 10);
+    const data: Record<string, any> = { ...dto };
+    if (data.password) {
+      data.password_visible = data.password as string;
+      data.password = await bcrypt.hash(data.password as string, 10);
     } else {
-      delete dto.password;
+      delete data.password;
     }
 
-    await this.repo.update(id, dto);
+    await this.repo.update(id, data);
     return this.findOne(id);
+  }
+
+  async verPassword(id: number, user?: { rol_nombre?: string }) {
+    if (user?.rol_nombre !== 'Administrador') {
+      throw new ForbiddenException(
+        'Solo el administrador puede ver las contraseñas.',
+      );
+    }
+
+    const usuario = await this.repo
+      .createQueryBuilder('u')
+      .addSelect('u.password_visible')
+      .where('u.id_usuario = :id', { id })
+      .getOne();
+    if (!usuario) throw new NotFoundException(`Usuario ${id} no encontrado`);
+
+    if (!usuario.password_visible) {
+      return {
+        disponible: false,
+        message:
+          'No hay contraseña visible registrada. Establece una nueva contraseña en "Editar" para que pueda mostrarse.',
+      };
+    }
+    return { disponible: true, password_visible: usuario.password_visible };
   }
 
   async actualizarUltimoLogin(id: number) {
